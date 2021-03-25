@@ -15,6 +15,7 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: ${{ github.workspace }} # set this to the path to your web app project
   JAVA_VERSION: '1.8'                # set this to the node version to use
   # Below variables are needed only to provision a wildfly based web app ; Optional if you already have a wildfly based web app on Azure
+  AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}     # set GH repo secret with the publish profile of the web app
  
  
 jobs:  
@@ -30,14 +31,11 @@ jobs:
     - name: Build with Maven
       run: |
         mvn clean install --file pom.xml -Dmaven.test.skip=true
-    - name: Azure authentication
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS  }}
     - name: 'Deploy to Azure WebApp'
       uses: azure/webapps-deploy@v2
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/target/*.war'
+        publish-profile: ${{ env.AZURE_WEBAPP_PUBLISH_PROFILE }}
         
   # For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
